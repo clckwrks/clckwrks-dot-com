@@ -20,10 +20,10 @@ import Data.Text  (Text)
 import Data.Text.Lazy.Builder (Builder)
 import qualified Data.Text as Text
 import Network.URI (URI(..), URIAuth(..), parseAbsoluteURI)
+#ifdef CABAL
 import qualified Paths_clckwrks                 as Clckwrks
 import qualified Paths_clckwrks_plugin_media    as Media
 import qualified Paths_clckwrks_plugin_bugs     as Bugs
-#ifdef CABAL
 import qualified Paths_clckwrks_theme_clckwrks  as Theme
 #endif
 import System.Console.GetOpt
@@ -117,15 +117,18 @@ helpMessage opts =
 
 
 clckwrksConfig :: IO (ClckwrksConfig SiteURL)
-clckwrksConfig =
-    do clckDir    <- Clckwrks.getDataDir
+clckwrksConfig = do
 #ifdef CABAL
+       clckDir    <- Clckwrks.getDataDir
        themeDir   <- Theme.getDataDir
-#else
-       let themeDir = "../clckwrks-theme-clckwrks/"
-#endif
        mediaDir   <- Media.getDataDir
        bugsDir    <- Bugs.getDataDir
+#else
+       let clckDir  = "../clckwrks/"
+           themeDir = "../clckwrks-theme-clckwrks/"
+           mediaDir = "../clckwrks-plugin-media/"
+           bugsDir  = "../clckwrks-plugin-bugs/"
+#endif
        return $ ClckwrksConfig
                   { clckHostname     = "localhost"
                   , clckPort         = 8000

@@ -39,7 +39,7 @@ Executable clckwrks-dot-com-server
         text                  == 0.11.*,
         web-routes            == 0.27.*,
         web-routes-happstack  == 0.23.*,
-        web-routes-th         == 0.21.*
+        web-routes-th         >= 0.21
 
   if flag(plugins)
     Build-depends:

@@ -83,8 +83,7 @@ Build-Depends-Indep: ghc-doc,
                      libghc-web-routes-doc (<< 0.28),
                      libghc-web-routes-happstack-doc (>= 0.23),
                      libghc-web-routes-happstack-doc (<< 0.24),
-                     libghc-web-routes-th-doc (>= 0.21),
-                     libghc-web-routes-th-doc (<< 0.22)
+                     libghc-web-routes-th-doc (>= 0.21)
 Standards-Version: 3.9.1
 Homepage: http://clckwrks.com/
 

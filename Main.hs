@@ -328,7 +328,7 @@ routeSite cc mediaConfig bugsConfig url =
 
 -- FIXME: something seems weird here.. we do not use the 'f' in route'
 mkSite2 :: ClckwrksConfig u -> MediaConfig -> BugsConfig -> Site SiteURL (ClckT SiteURL (ServerPartT IO) Response)
-mkSite2 cc mediaConfig bugsConfig = setDefault (C $ ViewPage $ PageId 1) $ mkSitePI route'
+mkSite2 cc mediaConfig bugsConfig = setDefault (C $ ViewPageSlug (PageId 1) (Slug Text.empty)) $ mkSitePI route'
     where
       route' :: (SiteURL -> [(Text.Text, Maybe Text.Text)] -> Text.Text) -> SiteURL -> ClckT SiteURL (ServerPartT IO) Response
       route' f url =

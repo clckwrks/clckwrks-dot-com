@@ -10,6 +10,7 @@ import Clckwrks.Media
 import Clckwrks.Monad
 import Clckwrks.Media.PreProcess (mediaCmd)
 import Clckwrks.Page.PreProcess (pageCmd)
+import Control.Concurrent       (forkIO, killThread)
 import Control.Monad.Reader     (ReaderT)
 import Control.Monad.State (evalStateT, get, modify)
 import qualified Data.ByteString.Char8 as C
@@ -19,6 +20,7 @@ import Data.Monoid (mappend)
 import Data.Text  (Text)
 import Data.Text.Lazy.Builder (Builder)
 import qualified Data.Text as Text
+import Happstack.Server.SimpleHTTP (waitForTermination)
 import Network.URI (URI(..), URIAuth(..), parseAbsoluteURI)
 #ifdef CABAL
 import qualified Paths_clckwrks                 as Clckwrks
@@ -257,7 +259,9 @@ clckwrks cc =
                  do clckState'    <- execClckT (siteShowURL sitePlus) clckState $ initPlugins
                     let sitePlus' = fmap (evalClckT (siteShowURL sitePlus) clckState') sitePlus
                     putStrLn $ "Listening on port " ++ show (clckPort cc)
-                    simpleHTTP (nullConf { port = clckPort cc }) (route cc sitePlus')
+                    tid <- forkIO $ simpleHTTP (nullConf { port = clckPort cc }) (route cc sitePlus')
+                    waitForTermination
+                    killThread tid
 
 route :: Happstack m => ClckwrksConfig SiteURL -> SitePlus SiteURL (m Response) -> m Response
 route cc sitePlus =

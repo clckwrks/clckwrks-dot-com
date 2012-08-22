@@ -1,3 +1,10 @@
+haskell-clckwrks-dot-com (0.1.17) unstable; urgency=low
+
+  * Updated to clckwrks 0.12
+  * Added waitForTermination
+
+ -- Jeremy Shaw <jeremy@seereason.com>  Wed, 22 Aug 2012 12:08:33 -0500
+
 haskell-clckwrks-dot-com (0.1.16) unstable; urgency=low
 
   * Now with support for page slugs

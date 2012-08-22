@@ -16,6 +16,7 @@ import Control.Monad.State (evalStateT, get, modify)
 import qualified Data.ByteString.Char8 as C
 import Data.List (intercalate)
 import qualified Data.Map as Map
+import Data.Maybe (fromMaybe)
 import Data.Monoid (mappend)
 import Data.Text  (Text)
 import Data.Text.Lazy.Builder (Builder)
@@ -250,8 +251,8 @@ clckwrks :: ClckwrksConfig SiteURL -> IO ()
 clckwrks cc =
     do checkResources cc
        withClckwrks cc $ \clckState ->
-           withMediaConfig (fmap (\p -> p </> "_state") $ clckTopDir cc ) (fmap (\p -> p </> "_media_uploads") $ clckTopDir cc ) $ \mediaConf ->
-           withBugsConfig  (fmap (\p -> p </> "_state") $ clckTopDir cc ) (fmap (\p -> p </> "_bugs_attachments") $ clckTopDir cc ) $ \bugsConf ->
+           withMediaConfig (fmap (\p -> p </> "_state") $ clckTopDir cc ) (fromMaybe "" (clckTopDir cc)  </> "_media_uploads") $ \mediaConf ->
+           withBugsConfig  (fmap (\p -> p </> "_state") $ clckTopDir cc ) (fromMaybe "" (clckTopDir cc) </> "_bugs_attachments") $ \bugsConf ->
                let -- site     = mkSite (clckPageHandler cc) clckState mediaConf
                    site     = mkSite2 cc mediaConf bugsConf
                    sitePlus = mkSitePlus (Text.pack $ clckHostname cc) (clckPort cc) Text.empty site

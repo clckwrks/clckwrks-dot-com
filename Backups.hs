@@ -10,7 +10,7 @@
 --   5. Add a postinst script in debian/.
 module Main where
 
-import Extra.SSH (sshExport)
+import Extra.SSH (sshVerify)
 import System.Archive.Prune (prune)
 import System.Archive.UpdateMirror
 import System.Environment (getArgs, withArgs)
@@ -47,11 +47,14 @@ mytargets =
     ]
 
 main :: IO ()
-main = getArgs >>= return . elem "--initialize" >>= \ init ->
-       if init
-       then hPutStr stderr ("Authenticating connection with " ++ user ++ "@" ++ host ++ "...") >>
-            sshExport (user ++ "@" ++ host) Nothing >>=
-            either (\ s -> hPutStrLn stderr ("initialization failed: " ++ s) >> exitWith (ExitFailure 1))
-                   (\ () -> hPutStrLn stderr "done." >> exitWith ExitSuccess)
-       else withArgs ["--exclude", lock, target] (updateMirrorMain mytargets) >>
+main =
+  do ok <- sshVerify (user ++ "@" ++ host) Nothing
+     init <- elem "--initialize" <$> getArgs
+     case (init, ok) of
+       (True, _) -> --initialize now exits immediately
+         exitWith ExitSuccess
+       (False, False) ->
+         hPutStrLn stderr ("Unable to contact " ++ user ++ "@" ++ host) >> exitWith (ExitFailure 1)
+       (False, True) ->
+         do withArgs [target] (updateMirrorMain mytargets)
             prune format local (target ++ "-") keep

@@ -10,6 +10,7 @@
 --   5. Add a postinst script in debian/.
 module Main where
 
+import Control.Applicative ((<$>))
 import Extra.SSH (sshVerify)
 import System.Archive.Prune (prune)
 import System.Archive.UpdateMirror

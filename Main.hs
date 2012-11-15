@@ -244,6 +244,7 @@ initPlugins =
        addPreProcessor "page" pageCmd'
 
        nestURL M $ addMediaAdminMenu
+
        dm <- nestURL C $ defaultAdminMenu
        mapM_ addAdminMenu dm
 

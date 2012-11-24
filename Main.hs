@@ -26,7 +26,6 @@ clckwrksConfig = ClckwrksConfig
     , clckJSTreePath      = ""
     , clckJSON2Path       = ""
     , clckThemeDir        = "../clckwrks-theme-clckwrks"
-    , clckPluginDir       = Map.empty
     , clckStaticDir       = "../clckwrks/static"
     , clckTopDir          = Nothing
     , clckEnableAnalytics = False

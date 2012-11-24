@@ -14,12 +14,13 @@ import qualified Data.Map as Map
 import Data.Text (Text)
 import qualified Data.Text as Text
 import Happstack.Server
-import Web.Plugin.Core
+import Web.Plugins.Core (initPlugin, setTheme)
 
 clckwrksConfig :: ClckwrksConfig
 clckwrksConfig = ClckwrksConfig
     { clckHostname        = "localhost"
     , clckPort            = 8000
+    , clckHidePort        = False
     , clckJQueryPath      = ""
     , clckJQueryUIPath    = ""
     , clckJSTreePath      = ""

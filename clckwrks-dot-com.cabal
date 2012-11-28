@@ -5,10 +5,14 @@ homepage:            http://www.clckwrks.com/
 license:             BSD3
 license-file:        LICENSE
 author:              Jeremy Shaw
-maintainer:          jeremy@n-heptane.com
+maintainer:          Jeremy Shaw <jeremy@n-heptane.com>
 category:            Clckwrks
 build-type:          Simple
 cabal-version:       >=1.8
+
+Flag backups
+     Description: enable the backups executable (currently disabled by default do to wacky dependencies not on hackage)
+     Default: False
 
 Executable             clckwrks-dot-com-server
   main-is:             Main.hs
@@ -24,3 +28,13 @@ Executable             clckwrks-dot-com-server
                        mtl                      >= 2.0 && < 2.2,
                        text                     == 0.11.*,
                        web-plugins              == 0.1.*
+
+Executable clckwrks-dot-com-backups
+   Main-Is: Backups.hs
+ if flag(backups)
+   Buildable: True
+   GHC-Options: -threaded -Wall -Wwarn -O2 -fno-warn-name-shadowing -fno-warn-missing-signatures -fwarn-tabs -fno-warn-unused-binds -fno-warn-orphans -fwarn-unused-imports -fno-spec-constr
+   Build-depends: archive >= 1.2.9, base, Extra
+ else
+   Buildable: False
+

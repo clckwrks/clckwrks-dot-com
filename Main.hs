@@ -1,24 +1,17 @@
-{-# LANGUAGE FlexibleContexts, OverloadedStrings, RankNTypes #-}
+{-# LANGUAGE FlexibleContexts, OverloadedStrings, PackageImports, RankNTypes #-}
 module Main where
 
-import Clckwrks.URL
-import Clckwrks.Admin.Template
-import Clckwrks.GetOpts
-import Clckwrks.Monad
-import Clckwrks.Server
-import Clckwrks.Plugin
-import Clckwrks.Bugs.Plugin
-import Clckwrks.Media.Plugin
-import Control.Applicative ((<$>))
-import Control.Monad.Trans
-import qualified Data.Map as Map
-import Data.Text (Text)
-import qualified Data.Text as Text
-import Happstack.Server
-import Theme
-import Web.Plugins.Core (initPlugin, setTheme)
-import System.Environment (getArgs)
-
+import Clckwrks
+import Clckwrks.GetOpts          (parseArgs, clckwrksOpts)
+import Clckwrks.Server           (simpleClckwrks)
+import Clckwrks.Plugin           (clckPlugin)
+import Clckwrks.Bugs.Plugin      (bugsPlugin)
+import Clckwrks.Media.Plugin     (mediaPlugin)
+import Control.Applicative       ((<$>))
+import Data.Text                 (Text)
+import "clckwrks-theme-clckwrks" Theme (theme)
+import Web.Plugins.Core          (initPlugin, setTheme)
+import System.Environment        (getArgs)
 
 ------------------------------------------------------------------------------
 -- ClckwrksConfig

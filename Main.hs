@@ -10,7 +10,7 @@ import Clckwrks.Media.Plugin     (mediaPlugin)
 import Control.Applicative       ((<$>))
 import Data.Text                 (Text)
 import "clckwrks-theme-clckwrks" Theme (theme)
-import Web.Plugins.Core          (initPlugin, setTheme)
+import Web.Plugins.Core          (addHandler, initPlugin, setTheme)
 import System.Environment        (getArgs)
 
 ------------------------------------------------------------------------------
@@ -47,8 +47,19 @@ initHook :: Text
          -> IO (ClckState, ClckwrksConfig)
 initHook baseURI clckState cc =
     do let p = plugins clckState
+       addHandler p "blog" blogHandler
        initPlugin p baseURI clckPlugin
        initPlugin p baseURI bugsPlugin
        initPlugin p baseURI mediaPlugin
        setTheme p (Just theme)
        return (clckState, cc)
+
+blogHandler :: ClckPlugins -> [Text] -> ClckT ClckURL (ServerPartT IO) Response
+blogHandler _plugins [] =
+    do blogURL <- showURL Blog
+       seeOther blogURL (toResponse ())
+blogHandler _plugins ["atom.xml"] =
+    do atomURL <- showURL AtomFeed
+       seeOther atomURL (toResponse ())
+blogHandler _plugins _ =
+    do notFound (toResponse ())

@@ -1,3 +1,9 @@
+haskell-clckwrks-dot-com (0.2.2) unstable; urgency=low
+
+  * Added -with-rtsopts=-I0 flag to ghc-options
+
+ -- Jeremy Shaw <jeremy@seereason.com>  Wed, 19 Dec 2012 15:20:12 -0600
+
 haskell-clckwrks-dot-com (0.2.1) unstable; urgency=low
 
   * include blogHandler hack

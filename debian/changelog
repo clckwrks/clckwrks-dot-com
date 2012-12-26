@@ -1,3 +1,9 @@
+haskell-clckwrks-dot-com (0.2.4) unstable; urgency=low
+
+  * Bumped to allow clckwrks 0.14
+
+ -- Jeremy Shaw <jeremy@seereason.com>  Wed, 26 Dec 2012 11:56:20 -0600
+
 haskell-clckwrks-dot-com (0.2.3) unstable; urgency=low
 
   * Added -rtsopts flag because the debian packaging requires it

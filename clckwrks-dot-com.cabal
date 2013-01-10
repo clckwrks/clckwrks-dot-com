@@ -1,5 +1,5 @@
 name:                clckwrks-dot-com
-version:             0.2.4
+version:             0.2.5
 synopsis:            clckwrks.com
 homepage:            http://www.clckwrks.com/
 license:             BSD3
@@ -32,7 +32,7 @@ Executable             clckwrks-dot-com-server
                        hsp                      == 0.7.*,
                        mtl                      >= 2.0 && < 2.2,
                        text                     == 0.11.*,
-                       web-plugins              == 0.1.*
+                       web-plugins              >= 0.1 && < 0.3
 
 Executable clckwrks-dot-com-backups
    Main-Is: Backups.hs

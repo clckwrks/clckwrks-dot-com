@@ -1,3 +1,9 @@
+haskell-clckwrks-dot-com (0.2.5) unstable; urgency=low
+
+  * Bumped to allow web-plugins 0.2
+
+ -- Jeremy Shaw <jeremy@seereason.com>  Thu, 10 Jan 2013 10:05:57 -0600
+
 haskell-clckwrks-dot-com (0.2.4) unstable; urgency=low
 
   * Bumped to allow clckwrks 0.14

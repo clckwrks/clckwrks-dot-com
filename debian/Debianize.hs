@@ -2,6 +2,8 @@
 import Data.Lens.Lazy (setL, modL)
 import Data.List as List (map, isPrefixOf, concat, foldr)
 import Data.Maybe (fromMaybe)
+import Data.Map as Map (insertWith)
+import Data.Set as Set (insert, singleton, union)
 import Data.Text as T
 import Debian.Changes (ChangeLog)
 import Debian.Debianize
@@ -11,23 +13,26 @@ import Text.PrettyPrint.ANSI.Leijen (Pretty, pretty, text)
 
 main :: IO ()
 main =
-    do jstreePath <- Clckwrks.getDataFileName "jstree"
-       json2Path  <- Clckwrks.getDataFileName "json2"
+    do let jstreePath = "/usr/share/clckwrks-$CLCKWRKS/jstree"
+           json2Path  = "/usr/share/clckwrks-$CLCKWRKS/json2"
+
        log <- inputChangeLog "debian"
-       getSimplePackageDescription' "." defaultAtoms >>= cabalToDebianization "." . customize jstreePath json2Path log >>= writeDebianization
+       inputCabalization "." defaultAtoms >>= debianization "." . customize jstreePath json2Path log >>= writeDebianization "."
 
 customize :: FilePath -> FilePath -> ChangeLog -> Atoms -> Atoms
 customize jstreePath json2Path log =
-    modControl (\ y -> y {homepage = Just "http://www.clckwrks.com/"}) .
+    modL control  (\ y -> y {homepage = Just "http://www.clckwrks.com/"}) .
+    modL rulesFragments (insert (pack (Prelude.unlines ["build/clckwrks-dot-com-production::", "\techo CLCKWRKS=`ghc-pkg field clckwrks version | sed 's/version: //'` > debian/default"]))) .
+    modL installTo (Map.insertWith Set.union (BinPkgName "clckwrks-dot-com-production") (Set.singleton ("debian/default", "/etc/default/clckwrks-dot-com-production"))) .
+    modL control (\ x -> x {standardsVersion = Just (StandardsVersion 3 9 4 Nothing)}) .
     setL sourceFormat (Just Native3) .
-    missingDependency (BinPkgName "libghc-clckwrks-theme-clckwrks-doc") .
-    setRevision "" .
+    modL missingDependencies (insert (BinPkgName "libghc-clckwrks-theme-clckwrks-doc")) .
+    setL revision (Just "") .
     doWebsite (BinPkgName "clckwrks-dot-com-production") (theSite jstreePath json2Path (BinPkgName "clckwrks-dot-com-production")) .
     doBackups (BinPkgName "clckwrks-dot-com-backups") "clckwrks-dot-com-backups" .
     fixRules .
     tight .
     setL changelog (Just log) .
-    modControl (\ x -> x {standardsVersion = Just (StandardsVersion 3 9 4 Nothing)}) .
     setL compat (Just 7)
 
 serverNames = List.map BinPkgName ["clckwrks-dot-com-production" {- , "clckwrks-dot-com-staging", "clckwrks-dot-com-development" -}]

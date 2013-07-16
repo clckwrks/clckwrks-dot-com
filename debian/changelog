@@ -1,3 +1,9 @@
+haskell-clckwrks-dot-com (0.3.0) unstable; urgency=low
+
+  * Updated to hsp-0.9
+
+ -- Jeremy Shaw <jeremy@seereason.com>  Mon, 15 Jul 2013 19:22:46 -0500
+
 haskell-clckwrks-dot-com (0.2.8) unstable; urgency=low
 
   * Allow newer containers

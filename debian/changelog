@@ -1,3 +1,9 @@
+haskell-clckwrks-dot-com (0.3.4) unstable; urgency=low
+
+  * Allow clckwrks 0.20
+
+ -- Jeremy Shaw <jeremy@seereason.com>  Sun, 17 Nov 2013 22:31:59 -0600
+
 haskell-clckwrks-dot-com (0.3.0) unstable; urgency=low
 
   * Updated to hsp-0.9

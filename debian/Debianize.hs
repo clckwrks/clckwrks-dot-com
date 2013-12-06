@@ -1,68 +1,69 @@
 {-# LANGUAGE OverloadedStrings #-}
-import Data.Lens.Lazy (setL, modL)
-import Data.List as List (map, isPrefixOf, concat, foldr)
-import Data.Maybe (fromMaybe)
-import Data.Map as Map (insertWith)
-import Data.Set as Set (insert, singleton, union)
-import Data.Text as T
+import Data.List as List (concat, map)
+import Data.Set (singleton)
+import Data.Text as T (lines, pack, Text, unlines)
 import Debian.Changes (ChangeLog)
-import Debian.Debianize
-import Debian.Relation (Relation(..), VersionReq(..), SrcPkgName(..), BinPkgName(..))
-import qualified Paths_clckwrks as Clckwrks
-import Text.PrettyPrint.ANSI.Leijen (Pretty, pretty, text)
+import Debian.Debianize (evalDebT, newAtoms, debianization, writeDebianization, compat, control, DebT, doBackups, doWebsite, execMap, inputChangeLog, installTo, missingDependencies, revision, rulesFragments, rulesHead, seereasonDefaultAtoms, sourceFormat, tightDependencyFixup, homepage, standardsVersion)
+import Debian.Debianize.Goodies (makeRulesHead)
+import Debian.Debianize.Prelude ((+++=), (~=), (+=), (%=))
+import Debian.Debianize.Types (InstallFile(InstallFile, destDir, destName, execName, sourceDir), Server(..), Site(..), Top(Top))
+import Debian.Policy (databaseDirectory, SourceFormat(Native3), StandardsVersion(StandardsVersion))
+import Debian.Relation (BinPkgName(BinPkgName), Relation(Rel))
+import Text.PrettyPrint.ANSI.Leijen (Pretty(pretty))
+
+top :: Top
+top = Top "."
 
 main :: IO ()
 main =
-    do let jstreePath = "/usr/share/clckwrks-$CLCKWRKS/jstree"
-           json2Path  = "/usr/share/clckwrks-$CLCKWRKS/json2"
+    evalDebT (debianization top seereasonDefaultAtoms customize >> writeDebianization top) newAtoms
 
-       log <- inputChangeLog "debian"
-       inputCabalization "." defaultAtoms >>= debianization "." . customize jstreePath json2Path log >>= writeDebianization "."
-
-customize :: FilePath -> FilePath -> ChangeLog -> Atoms -> Atoms
-customize jstreePath json2Path log =
-    modL control  (\ y -> y {homepage = Just "http://www.clckwrks.com/"}) .
-    modL rulesFragments (insert (pack (Prelude.unlines ["build/clckwrks-dot-com-production::", "\techo CLCKWRKS=`ghc-pkg field clckwrks version | sed 's/version: //'` > debian/default"]))) .
-    modL installTo (Map.insertWith Set.union (BinPkgName "clckwrks-dot-com-production") (Set.singleton ("debian/default", "/etc/default/clckwrks-dot-com-production"))) .
-    modL control (\ x -> x {standardsVersion = Just (StandardsVersion 3 9 4 Nothing)}) .
-    setL sourceFormat (Just Native3) .
-    modL missingDependencies (insert (BinPkgName "libghc-clckwrks-theme-clckwrks-doc")) .
-    setL revision (Just "") .
-    doWebsite (BinPkgName "clckwrks-dot-com-production") (theSite jstreePath json2Path (BinPkgName "clckwrks-dot-com-production")) .
-    doBackups (BinPkgName "clckwrks-dot-com-backups") "clckwrks-dot-com-backups" .
-    fixRules .
-    tight .
-    setL changelog (Just log) .
-    setL compat (Just 7)
+customize :: DebT IO ()
+customize =
+    do inputChangeLog top
+       execMap +++= ("hsx2hs", [[Rel (BinPkgName "hsx2hs") Nothing Nothing]])
+       homepage ~= Just "http://www.clckwrks.com/"
+       rulesFragments += pack (Prelude.unlines ["build/clckwrks-dot-com-production::", "\techo CLCKWRKS=`ghc-pkg field clckwrks version | sed 's/version: //'` > debian/default"])
+       installTo +++= (BinPkgName "clckwrks-dot-com-production", singleton ("debian/default", "/etc/default/clckwrks-dot-com-production"))
+       standardsVersion ~= Just (StandardsVersion 3 9 4 Nothing)
+       sourceFormat ~= Just Native3
+       missingDependencies += (BinPkgName "libghc-clckwrks-theme-clckwrks-doc")
+       revision ~= Just ""
+       doWebsite (BinPkgName "clckwrks-dot-com-production") (theSite (BinPkgName "clckwrks-dot-com-production"))
+       doBackups (BinPkgName "clckwrks-dot-com-backups") "clckwrks-dot-com-backups"
+       fixRules
+       tight
+       compat ~= Just 7
 
 serverNames = List.map BinPkgName ["clckwrks-dot-com-production" {- , "clckwrks-dot-com-staging", "clckwrks-dot-com-development" -}]
 
 -- Insert a line just above the debhelper.mk include
-fixRules deb =
-    modL rulesHead (\ mt -> (Just . f) (fromMaybe (getRulesHead deb) mt)) deb
+fixRules =
+    do hd <- makeRulesHead
+       rulesHead ~= Just (f hd)
     where
       f t = T.unlines $ List.concat $
             List.map (\ line -> if line == "include /usr/share/cdbs/1/rules/debhelper.mk"
                                 then ["DEB_SETUP_GHC_CONFIGURE_ARGS = -fbackups", "", line] :: [T.Text]
                                 else [line] :: [T.Text]) (T.lines t)
 
-tight deb = List.foldr (tightDependencyFixup
+tight = mapM_ (tightDependencyFixup
                          -- For each pair (A, B) make sure that this package requires the
                          -- same exact version of package B as the version of A currently
                          -- installed during the build.
                          [(BinPkgName "libghc-clckwrks-theme-clckwrks-dev", BinPkgName "haskell-clckwrks-theme-clckwrks-utils"),
                           (BinPkgName "libghc-clckwrks-plugin-media-dev", BinPkgName "haskell-clckwrks-plugin-media-utils"),
                           (BinPkgName "libghc-clckwrks-plugin-bugs-dev", BinPkgName "haskell-clckwrks-plugin-bugs-utils"),
-                          (BinPkgName "libghc-clckwrks-dev", BinPkgName "haskell-clckwrks-utils")]) deb serverNames
+                          (BinPkgName "libghc-clckwrks-dev", BinPkgName "haskell-clckwrks-utils")]) serverNames
 
-theSite :: FilePath -> FilePath -> BinPkgName -> Site
-theSite jstreePath json2Path deb =
+theSite :: BinPkgName -> Site
+theSite deb =
     Site { domain = hostname'
          , serverAdmin = "logic@seereason.com"
-         , server = theServer jstreePath json2Path deb }
+         , server = theServer deb }
 
-theServer :: FilePath -> FilePath -> BinPkgName -> Server
-theServer jstreePath json2Path deb =
+theServer :: BinPkgName -> Server
+theServer deb =
           Server { hostname =
                        case deb of
                          BinPkgName "clckwrks-dot-com-production" -> hostname'
@@ -78,8 +79,8 @@ theServer jstreePath json2Path deb =
                      , "--enable-analytics"
                      , "--jquery-path", "/usr/share/javascript/jquery/"
                      , "--jqueryui-path", "/usr/share/javascript/jquery-ui/"
-                     , "--jstree-path", jstreePath
-                     , "--json2-path",json2Path
+                     , "--jstree-path", "/usr/share/clckwrks/jstree"
+                     , "--json2-path", "/usr/share/clckwrks/json2"
                      ]
                  , installFile =
                      InstallFile { execName   = "clckwrks-dot-com-server"

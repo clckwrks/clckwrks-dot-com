@@ -9,5 +9,7 @@ main = backup (BackupTarget
                                 , uriRegName = "clckwrks.com"
                                 , uriPort = ""}
                , keep = 50
-               , localTop = "/home/autobuilder/backups"
+               , localTop = "/srv/backups"
+               , nice = 10, delay = 0
+               , bwLimit = Just 20
                , remoteTop = "/srv" })

@@ -24,8 +24,8 @@ Executable             clckwrks-dot-com-server
   ghc-options:         -threaded -O2 -rtsopts -with-rtsopts=-I0
   build-tools:         hsx2hs
   build-depends:       base                     > 4 && <5,
-                       clckwrks                 >= 0.21 && < 0.22,
-                       clckwrks-theme-clckwrks  == 0.4.*,
+                       clckwrks                 >= 0.18 && < 0.21,
+                       clckwrks-theme-clckwrks  == 0.3.*,
                        clckwrks-plugin-bugs     == 0.6.*,
                        clckwrks-plugin-media    == 0.6.*,
                        clckwrks-plugin-page     >= 0.3 && < 0.4,
@@ -42,7 +42,7 @@ Executable clckwrks-dot-com-backups
  if flag(backups)
    Buildable: True
    GHC-Options: -threaded -Wall -Wwarn -O2 -fno-warn-name-shadowing -fno-warn-missing-signatures -fwarn-tabs -fno-warn-unused-binds -fno-warn-orphans -fwarn-unused-imports -fno-spec-constr
-   Build-depends: archive >= 1.2.9, base, Extra
+   Build-depends: archive >= 1.6, base, Extra, network, cabal-debian >= 4
  else
    Buildable: False
 

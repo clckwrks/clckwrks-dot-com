@@ -6,8 +6,8 @@ import Debian.Changes (ChangeLog)
 import Debian.Debianize (evalDebT, newAtoms, debianization, writeDebianization, compat, control, DebT, doBackups, doWebsite, execMap, inputChangeLog, installTo, missingDependencies, revision, rulesFragments, rulesHead, seereasonDefaultAtoms, sourceFormat, tightDependencyFixup, homepage, standardsVersion, (+++=), (~=), (+=), (%=), InstallFile(InstallFile, destDir, destName, execName, sourceDir), Server(..), Site(..), Top(Top))
 import Debian.Debianize.Goodies (makeRulesHead)
 import Debian.Policy (databaseDirectory, SourceFormat(Native3), StandardsVersion(StandardsVersion))
+import Debian.Pretty (Pretty(pretty))
 import Debian.Relation (BinPkgName(BinPkgName), Relation(Rel))
-import Text.PrettyPrint.ANSI.Leijen (Pretty(pretty))
 
 top :: Top
 top = Top "."

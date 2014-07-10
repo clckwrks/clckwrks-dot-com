@@ -3,7 +3,7 @@ import Data.List as List (concat, map)
 import Data.Set (singleton)
 import Data.Text as T (lines, pack, Text, unlines)
 import Debian.Changes (ChangeLog)
-import Debian.Debianize (evalDebT, newAtoms, debianization, writeDebianization, compat, control, DebT, doBackups, doWebsite, execMap, inputChangeLog, installTo, missingDependencies, revision, rulesFragments, rulesHead, sourceFormat, tightDependencyFixup, homepage, standardsVersion, (+++=), (~=), (+=), (%=), InstallFile(InstallFile, destDir, destName, execName, sourceDir), Server(..), Site(..), Top(Top))
+import Debian.Debianize (evalDebT, newAtoms, debianization, writeDebianization, compat, control, DebT, doBackups, doWebsite, execMap, inputChangeLog, installTo, missingDependencies, revision, rulesFragments, rulesHead, sourceFormat, tightDependencyFixup, homepage, standardsVersion, (+++=), (~=), (+=), (%=), InstallFile(InstallFile, destDir, destName, execName, sourceDir), Server(..), Site(..))
 import Debian.Debianize.Goodies (makeRulesHead)
 import Debian.AutoBuilder.Details.Atoms (seereasonDefaultAtoms)
 import Debian.Policy (databaseDirectory, SourceFormat(Native3), StandardsVersion(StandardsVersion))
@@ -11,15 +11,12 @@ import Debian.Pretty (Pretty(pretty))
 import Debian.Relation (BinPkgName(BinPkgName), Relation(Rel))
 import Distribution.Compiler (CompilerFlavor(GHC))
 
-top :: Top
-top = Top "."
-
 main :: IO ()
-main = newAtoms GHC >>= evalDebT (debianization top seereasonDefaultAtoms customize >> writeDebianization top)
+main = newAtoms GHC >>= evalDebT (debianization seereasonDefaultAtoms customize >> writeDebianization)
 
 customize :: DebT IO ()
 customize =
-    do inputChangeLog top
+    do inputChangeLog
        execMap +++= ("hsx2hs", [[Rel (BinPkgName "hsx2hs") Nothing Nothing]])
        homepage ~= Just "http://www.clckwrks.com/"
        rulesFragments += pack (Prelude.unlines ["build/clckwrks-dot-com-production::", "\techo CLCKWRKS=`ghc-pkg field clckwrks version | sed 's/version: //'` > debian/default"])

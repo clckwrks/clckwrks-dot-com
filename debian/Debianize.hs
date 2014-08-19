@@ -12,7 +12,7 @@ import Debian.Relation (BinPkgName(BinPkgName), Relation(Rel))
 import Distribution.Compiler (CompilerFlavor(GHC))
 
 main :: IO ()
-main = newAtoms GHC >>= evalDebT (debianization seereasonDefaultAtoms customize >> writeDebianization)
+main = newAtoms >>= evalDebT (debianization seereasonDefaultAtoms customize >> writeDebianization)
 
 customize :: DebT IO ()
 customize =
@@ -20,7 +20,7 @@ customize =
        execMap +++= ("hsx2hs", [[Rel (BinPkgName "hsx2hs") Nothing Nothing]])
        homepage ~= Just "http://www.clckwrks.com/"
        rulesFragments += pack (Prelude.unlines ["build/clckwrks-dot-com-production::", "\techo CLCKWRKS=`ghc-pkg field clckwrks version | sed 's/version: //'` > debian/default"])
-       installTo +++= (BinPkgName "clckwrks-dot-com-production", singleton ("debian/default", "/etc/default/clckwrks-dot-com-production"))
+       installTo (BinPkgName "clckwrks-dot-com-production") "debian/default" "/etc/default/clckwrks-dot-com-production"
        standardsVersion ~= Just (StandardsVersion 3 9 4 Nothing)
        sourceFormat ~= Just Native3
        missingDependencies += (BinPkgName "libghc-clckwrks-theme-clckwrks-doc")

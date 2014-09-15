@@ -7,7 +7,7 @@ import Debian.Debianize (evalDebT, newAtoms, debianization, writeDebianization, 
 import Debian.Debianize.Goodies (makeRulesHead)
 import Debian.AutoBuilder.Details.Atoms (seereasonDefaultAtoms)
 import Debian.Policy (databaseDirectory, SourceFormat(Native3), StandardsVersion(StandardsVersion))
-import Debian.Pretty (Pretty(pretty))
+import Debian.Pretty (ppDisplay)
 import Debian.Relation (BinPkgName(BinPkgName), Relation(Rel))
 import Distribution.Compiler (CompilerFlavor(GHC))
 
@@ -80,7 +80,7 @@ theServer deb =
                      ]
                  , installFile =
                      InstallFile { execName   = "clckwrks-dot-com-server"
-                                 , destName   = show (pretty deb)
+                                 , destName   = ppDisplay deb
                                  , sourceDir  = Nothing
                                  , destDir    = Nothing }
                  }

@@ -3,7 +3,7 @@ import Data.List as List (concat, map)
 import Data.Set (singleton)
 import Data.Text as T (lines, pack, Text, unlines)
 import Debian.Changes (ChangeLog)
-import Debian.Debianize (evalDebT, newAtoms, debianization, writeDebianization, compat, control, DebT, doBackups, doWebsite, execMap, inputChangeLog, installTo, missingDependencies, revision, rulesFragments, rulesHead, sourceFormat, tightDependencyFixup, homepage, standardsVersion, (+++=), (~=), (+=), (%=), InstallFile(InstallFile, destDir, destName, execName, sourceDir), Server(..), Site(..))
+import Debian.Debianize (evalDebT, newAtoms, debianize, writeDebianization, compat, control, DebT, doBackups, doWebsite, execMap, inputChangeLog, installTo, missingDependencies, revision, rulesFragments, rulesHead, sourceFormat, tightDependencyFixup, homepage, standardsVersion, (+++=), (~=), (+=), (%=), InstallFile(InstallFile, destDir, destName, execName, sourceDir), Server(..), Site(..))
 import Debian.Debianize.Goodies (makeRulesHead)
 import Debian.AutoBuilder.Details.Atoms (seereasonDefaultAtoms)
 import Debian.Policy (databaseDirectory, SourceFormat(Native3), StandardsVersion(StandardsVersion))
@@ -12,7 +12,7 @@ import Debian.Relation (BinPkgName(BinPkgName), Relation(Rel))
 import Distribution.Compiler (CompilerFlavor(GHC))
 
 main :: IO ()
-main = newAtoms >>= evalDebT (debianization seereasonDefaultAtoms customize >> writeDebianization)
+main = newAtoms >>= evalDebT (debianize (seereasonDefaultAtoms >> customize) >> writeDebianization)
 
 customize :: DebT IO ()
 customize =

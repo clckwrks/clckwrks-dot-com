@@ -3,8 +3,7 @@ import Data.List as List (concat, map)
 import Data.Set (singleton)
 import Data.Text as T (lines, pack, Text, unlines)
 import Debian.Changes (ChangeLog)
-import Debian.Debianize (evalDebT, newAtoms, debianize, writeDebianization, compat, control, DebT, doBackups, doWebsite, execMap, inputChangeLog, installTo, missingDependencies, revision, rulesFragments, rulesHead, sourceFormat, tightDependencyFixup, homepage, standardsVersion, (+++=), (~=), (+=), (%=), InstallFile(InstallFile, destDir, destName, execName, sourceDir), Server(..), Site(..))
-import Debian.Debianize.Goodies (makeRulesHead)
+import Debian.Debianize (evalDebT, newAtoms, debianize, writeDebianization, compat, control, DebT, doBackups, doWebsite, execMap, inputChangeLog, installTo, missingDependencies, revision, rulesFragments, rulesHead, rulesSettings, sourceFormat, tightDependencyFixup, homepage, standardsVersion, (+++=), (~=), (+=), (%=), InstallFile(InstallFile, destDir, destName, execName, sourceDir), Server(..), Site(..))
 import Debian.AutoBuilder.Details.Atoms (seereasonDefaultAtoms)
 import Debian.Policy (databaseDirectory, SourceFormat(Native3), StandardsVersion(StandardsVersion))
 import Debian.Pretty (ppDisplay)
@@ -34,14 +33,7 @@ customize =
 serverNames = List.map BinPkgName ["clckwrks-dot-com-production" {- , "clckwrks-dot-com-staging", "clckwrks-dot-com-development" -}]
 
 -- Insert a line just above the debhelper.mk include
-fixRules =
-    do hd <- makeRulesHead
-       rulesHead ~= Just (f hd)
-    where
-      f t = T.unlines $ List.concat $
-            List.map (\ line -> if line == "include /usr/share/cdbs/1/rules/debhelper.mk"
-                                then ["DEB_SETUP_GHC_CONFIGURE_ARGS = -fbackups", "", line] :: [T.Text]
-                                else [line] :: [T.Text]) (T.lines t)
+fixRules = rulesSettings %= (++ ["DEB_SETUP_GHC_CONFIGURE_ARGS = -fbackups"])
 
 tight = mapM_ (tightDependencyFixup
                          -- For each pair (A, B) make sure that this package requires the

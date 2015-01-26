@@ -1,20 +1,20 @@
-{-# LANGUAGE FlexibleContexts, OverloadedStrings, PackageImports, RankNTypes #-}
+{-# LANGUAGE FlexibleContexts, OverloadedStrings #-}
 module Main where
 
 import Clckwrks
-import Clckwrks.GetOpts          (parseArgs, clckwrksOpts)
-import Clckwrks.Server           (simpleClckwrks)
-import Clckwrks.Plugin           (clckPlugin)
-import Clckwrks.Bugs.Plugin      (bugsPlugin)
-import Clckwrks.Media.Plugin     (mediaPlugin)
-import Clckwrks.Page.Plugin      (pagePlugin)
-import Clckwrks.Page.URL         (PageURL(..))
-import Control.Applicative       ((<$>))
-import Data.Text                 (Text)
--- import "clckwrks-theme-clckwrks" Theme (theme)
-import Theme                     (theme)
-import Web.Plugins.Core          (Plugin(..), addHandler, getPluginRouteFn, initPlugin, setTheme)
-import System.Environment        (getArgs)
+import Clckwrks.GetOpts             (parseArgs, clckwrksOpts)
+import Clckwrks.Server              (simpleClckwrks)
+import Clckwrks.Plugin              (clckPlugin)
+import Clckwrks.Authenticate.Plugin (authenticatePlugin)
+import Clckwrks.Bugs.Plugin         (bugsPlugin)
+import Clckwrks.Media.Plugin        (mediaPlugin)
+import Clckwrks.Page.Plugin         (pagePlugin)
+import Clckwrks.Page.URL            (PageURL(..))
+import Control.Applicative          ((<$>))
+import Data.Text                    (Text)
+import Theme                        (theme)
+import Web.Plugins.Core             (Plugin(..), addHandler, getPluginRouteFn, initPlugin, setTheme)
+import System.Environment           (getArgs)
 
 ------------------------------------------------------------------------------
 -- ClckwrksConfig
@@ -53,6 +53,7 @@ initHook baseURI clckState cc =
     do let p = plugins clckState
        addHandler p "blog" blogHandler
        initPlugin p "" clckPlugin
+       initPlugin p "https://www.clckwrks.com" authenticatePlugin
        initPlugin p "" pagePlugin
        initPlugin p "" bugsPlugin
        initPlugin p "" mediaPlugin

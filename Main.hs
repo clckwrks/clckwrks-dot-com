@@ -53,7 +53,7 @@ initHook baseURI clckState cc =
     do let p = plugins clckState
        addHandler p "blog" blogHandler
        initPlugin p "" clckPlugin
-       initPlugin p "https://www.clckwrks.com" authenticatePlugin
+       initPlugin p "http://www.clckwrks.com" authenticatePlugin
        initPlugin p "" pagePlugin
        initPlugin p "" bugsPlugin
        initPlugin p "" mediaPlugin

@@ -11,9 +11,8 @@ build-type:          Custom
 cabal-version:       >=1.8
 
 source-repository head
-    type:     darcs
-    subdir:   clckwrks-dot-com
-    location: http://hub.darcs.net/stepcut/clckwrks
+    type:     git
+    location: git://github.com/clckwrks/clckwrks-dot-com.git
 
 Flag backups
      Description: enable the backups executable (currently disabled by default do to wacky dependencies not on hackage)

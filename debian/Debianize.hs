@@ -1,34 +1,40 @@
 {-# LANGUAGE OverloadedStrings #-}
+
+import Control.Category ((.))
 import Data.List as List (concat, map)
-import Data.Set (singleton)
+import Data.Set as Set (singleton, insert)
 import Data.Text as T (lines, pack, Text, unlines)
 import Debian.Changes (ChangeLog)
-import Debian.Debianize (evalDebT, newAtoms, debianize, writeDebianization, compat, control, DebT, doBackups, doWebsite, execMap, inputChangeLog, installTo, missingDependencies, revision, rulesFragments, rulesHead, rulesSettings, sourceFormat, tightDependencyFixup, homepage, standardsVersion, (+++=), (~=), (+=), (%=), InstallFile(InstallFile, destDir, destName, execName, sourceDir), Server(..), Site(..))
+import Debian.Debianize (evalCabalT, newAtoms, debianize, writeDebianization, compat, control, CabalT, doBackups, doWebsite, execMap, inputChangeLog, installTo, missingDependencies, revision, rulesFragments, rulesHead, rulesSettings, sourceFormat, tightDependencyFixup, homepage, standardsVersion, (+++=), (~=), (+=), (%=), InstallFile(InstallFile, destDir, destName, execName, sourceDir), Server(..), Site(..), debInfo, atomSet)
+import Debian.Debianize.InputCabalPackageDescription (newFlags)
+import Debian.Debianize.Monad (liftCabal)
+import Debian.Debianize.Types.Atoms (Atom(InstallTo))
 import Debian.AutoBuilder.Details.Atoms (seereasonDefaultAtoms)
 import Debian.Policy (databaseDirectory, SourceFormat(Native3), StandardsVersion(StandardsVersion))
 import Debian.Pretty (ppDisplay)
 import Debian.Relation (BinPkgName(BinPkgName), Relation(Rel))
 import Distribution.Compiler (CompilerFlavor(GHC))
+import Prelude hiding ((.))
 
 main :: IO ()
-main = newAtoms >>= evalDebT (debianize (seereasonDefaultAtoms >> customize) >> writeDebianization)
+main = newFlags >>= newAtoms >>= evalCabalT (debianize (seereasonDefaultAtoms >> customize) >> liftCabal writeDebianization)
 
-customize :: DebT IO ()
+customize :: CabalT IO ()
 customize =
-    do inputChangeLog
+    do liftCabal inputChangeLog
        execMap +++= ("hsx2hs", [[Rel (BinPkgName "hsx2hs") Nothing Nothing]])
-       homepage ~= Just "http://www.clckwrks.com/"
-       rulesFragments += pack (Prelude.unlines ["build/clckwrks-dot-com-production::", "\techo CLCKWRKS=`ghc-pkg field clckwrks version | sed 's/version: //'` > debian/default"])
-       installTo (BinPkgName "clckwrks-dot-com-production") "debian/default" "/etc/default/clckwrks-dot-com-production"
-       standardsVersion ~= Just (StandardsVersion 3 9 4 Nothing)
-       sourceFormat ~= Just Native3
+       (homepage . debInfo) ~= Just "http://www.clckwrks.com/"
+       (rulesFragments . debInfo) += pack (Prelude.unlines ["build/clckwrks-dot-com-production::", "\techo CLCKWRKS=`ghc-pkg field clckwrks version | sed 's/version: //'` > debian/default"])
+       (atomSet . debInfo) %= (Set.insert $ InstallTo (BinPkgName "clckwrks-dot-com-production") "debian/default" "/etc/default/clckwrks-dot-com-production")
+       (standardsVersion . debInfo) ~= Just (StandardsVersion 3 9 4 Nothing)
+       (sourceFormat . debInfo) ~= Just Native3
        missingDependencies += (BinPkgName "libghc-clckwrks-theme-clckwrks-doc")
        revision ~= Just ""
        doWebsite (BinPkgName "clckwrks-dot-com-production") (theSite (BinPkgName "clckwrks-dot-com-production"))
        doBackups (BinPkgName "clckwrks-dot-com-backups") "clckwrks-dot-com-backups"
-       fixRules
-       tight
-       compat ~= Just 7
+       liftCabal fixRules
+       liftCabal tight
+       (compat . debInfo) ~= Just 7
 
 serverNames = List.map BinPkgName ["clckwrks-dot-com-production" {- , "clckwrks-dot-com-staging", "clckwrks-dot-com-development" -}]
 

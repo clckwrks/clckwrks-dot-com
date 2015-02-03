@@ -9,7 +9,7 @@ import Debian.Debianize -- (evalCabalT, newAtoms, debianize, writeDebianization,
 --import Debian.Debianize.InputCabalPackageDescription (newFlags)
 --import Debian.Debianize.Monad (liftCabal)
 --import Debian.Debianize.Types.Atoms (Atom(InstallTo))
-import Debian.AutoBuilder.Details.Atoms (seereasonDefaultAtoms)
+import Debian.AutoBuilder.Details.CabalInfo (seereasonDefaults)
 import Debian.Policy (databaseDirectory, SourceFormat(Native3), StandardsVersion(StandardsVersion))
 import Debian.Pretty (ppDisplay)
 import Debian.Relation (BinPkgName(BinPkgName), Relation(Rel))
@@ -17,7 +17,7 @@ import Distribution.Compiler (CompilerFlavor(GHC))
 import Prelude hiding ((.))
 
 main :: IO ()
-main = newFlags >>= newCabalInfo >>= evalCabalT (debianize (seereasonDefaultAtoms >> customize) >> liftCabal writeDebianization)
+main = newFlags >>= newCabalInfo >>= evalCabalT (debianize (seereasonDefaults >> customize) >> liftCabal writeDebianization)
 
 customize :: CabalT IO ()
 customize =

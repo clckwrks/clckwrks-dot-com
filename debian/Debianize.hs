@@ -22,19 +22,19 @@ main = newFlags >>= newCabalInfo >>= evalCabalT (debianize (seereasonDefaults >>
 customize :: CabalT IO ()
 customize =
     do liftCabal inputChangeLog
-       (execMap . debInfo) +++= ("hsx2hs", [[Rel (BinPkgName "hsx2hs") Nothing Nothing]])
-       (homepage . control . debInfo) ~= Just "http://www.clckwrks.com/"
-       (rulesFragments . debInfo) += pack (Prelude.unlines ["build/clckwrks-dot-com-production::", "\techo CLCKWRKS=`ghc-pkg field clckwrks version | sed 's/version: //'` > debian/default"])
-       (atomSet . debInfo) %= (Set.insert $ InstallTo (BinPkgName "clckwrks-dot-com-production") "debian/default" "/etc/default/clckwrks-dot-com-production")
-       (standardsVersion . control . debInfo) ~= Just (StandardsVersion 3 9 4 Nothing)
-       (sourceFormat . debInfo) ~= Just Native3
-       (missingDependencies . debInfo) += (BinPkgName "libghc-clckwrks-theme-clckwrks-doc")
-       (revision . debInfo) ~= Just ""
+       (debInfo . execMap) +++= ("hsx2hs", [[Rel (BinPkgName "hsx2hs") Nothing Nothing]])
+       (debInfo . control . homepage) ~= Just "http://www.clckwrks.com/"
+       (debInfo . rulesFragments) += pack (Prelude.unlines ["build/clckwrks-dot-com-production::", "\techo CLCKWRKS=`ghc-pkg field clckwrks version | sed 's/version: //'` > debian/default"])
+       (debInfo . atomSet) %= (Set.insert $ InstallTo (BinPkgName "clckwrks-dot-com-production") "debian/default" "/etc/default/clckwrks-dot-com-production")
+       (debInfo . control . standardsVersion) ~= Just (StandardsVersion 3 9 4 Nothing)
+       (debInfo . sourceFormat) ~= Just Native3
+       (debInfo . missingDependencies) += (BinPkgName "libghc-clckwrks-theme-clckwrks-doc")
+       (debInfo . revision) ~= Just ""
        doWebsite (BinPkgName "clckwrks-dot-com-production") (theSite (BinPkgName "clckwrks-dot-com-production"))
        doBackups (BinPkgName "clckwrks-dot-com-backups") "clckwrks-dot-com-backups"
        liftCabal fixRules
        liftCabal tight
-       (compat . debInfo) ~= Just 7
+       (debInfo . compat) ~= Just 7
 
 serverNames = List.map BinPkgName ["clckwrks-dot-com-production" {- , "clckwrks-dot-com-staging", "clckwrks-dot-com-development" -}]
 

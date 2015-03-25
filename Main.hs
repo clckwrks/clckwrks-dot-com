@@ -6,7 +6,7 @@ import Clckwrks.GetOpts             (parseArgs, clckwrksOpts)
 import Clckwrks.Server              (simpleClckwrks)
 import Clckwrks.Plugin              (clckPlugin)
 import Clckwrks.Authenticate.Plugin (authenticatePlugin)
-import Clckwrks.Bugs.Plugin         (bugsPlugin)
+-- import Clckwrks.Bugs.Plugin         (bugsPlugin)
 import Clckwrks.Media.Plugin        (mediaPlugin)
 import Clckwrks.Page.Plugin         (pagePlugin)
 import Clckwrks.Page.URL            (PageURL(..))
@@ -54,8 +54,9 @@ initHook baseURI clckState cc =
        addHandler p "blog" blogHandler
        initPlugin p "" clckPlugin
        initPlugin p "http://www.clckwrks.com" authenticatePlugin
+--       initPlugin p "http://localhost:8000" authenticatePlugin
        initPlugin p "" pagePlugin
-       initPlugin p "" bugsPlugin
+--       initPlugin p "" bugsPlugin
        initPlugin p "" mediaPlugin
        setTheme p (Just theme)
        return (clckState, cc)

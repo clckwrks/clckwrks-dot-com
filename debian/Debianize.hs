@@ -11,7 +11,7 @@ import Debian.Debianize -- (evalCabalT, newAtoms, debianize, writeDebianization,
 --import Debian.Debianize.Types.Atoms (Atom(InstallTo))
 import Debian.AutoBuilder.Details.Versions (seereasonDefaults)
 import Debian.Policy (databaseDirectory, SourceFormat(Native3), StandardsVersion(StandardsVersion))
-import Debian.Pretty (ppDisplay)
+import Debian.Pretty (ppShow)
 import Debian.Relation (BinPkgName(BinPkgName), Relation(Rel))
 import Distribution.Compiler (CompilerFlavor(GHC))
 import Prelude hiding ((.))
@@ -78,7 +78,7 @@ theServer deb =
                      ]
                  , installFile =
                      InstallFile { execName   = "clckwrks-dot-com-server"
-                                 , destName   = ppDisplay deb
+                                 , destName   = ppShow deb
                                  , sourceDir  = Nothing
                                  , destDir    = Nothing }
                  }

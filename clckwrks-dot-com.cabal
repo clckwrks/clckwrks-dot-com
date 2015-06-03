@@ -1,5 +1,5 @@
 name:                clckwrks-dot-com
-version:             0.3.11
+version:             0.3.12
 synopsis:            clckwrks.com
 homepage:            http://www.clckwrks.com/
 license:             BSD3
@@ -26,7 +26,7 @@ Executable             clckwrks-dot-com-server
                        clckwrks                 >= 0.23 && < 0.24,
                        clckwrks-theme-clckwrks  == 0.5.*,
                        clckwrks-plugin-media    == 0.6.*,
-                       clckwrks-plugin-page     >= 0.3 && < 0.4,
+                       clckwrks-plugin-page     >= 0.3 && < 0.5,
                        containers               >= 0.4 && < 0.6,
                        happstack-server         >= 7.0 && < 7.5,
                        hsp                      >= 0.9 && < 0.11,

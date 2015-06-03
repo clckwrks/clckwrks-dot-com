@@ -1,7 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-import Control.Category ((.))
+import Control.Lens
 import Data.List as List (concat, map)
+import Data.Map as Map (insertWith)
+import Data.Monoid (mappend)
 import Data.Set as Set (singleton, insert)
 import Data.Text as T (lines, pack, Text, unlines)
 import Debian.Changes (ChangeLog)
@@ -14,7 +16,6 @@ import Debian.Policy (databaseDirectory, SourceFormat(Native3), StandardsVersion
 import Debian.Pretty (ppShow)
 import Debian.Relation (BinPkgName(BinPkgName), Relation(Rel))
 import Distribution.Compiler (CompilerFlavor(GHC))
-import Prelude hiding ((.))
 
 main :: IO ()
 main = newFlags >>= newCabalInfo >>= evalCabalT (debianize (seereasonDefaults >> customize) >> liftCabal writeDebianization)
@@ -22,19 +23,19 @@ main = newFlags >>= newCabalInfo >>= evalCabalT (debianize (seereasonDefaults >>
 customize :: CabalT IO ()
 customize =
     do liftCabal inputChangeLog
-       (debInfo . execMap) +++= ("hsx2hs", [[Rel (BinPkgName "hsx2hs") Nothing Nothing]])
-       (debInfo . control . homepage) ~= Just "http://www.clckwrks.com/"
-       (debInfo . rulesFragments) += pack (Prelude.unlines ["build/clckwrks-dot-com-production::", "\techo CLCKWRKS=`ghc-pkg field clckwrks version | sed 's/version: //'` > debian/default"])
+       (debInfo . execMap) %= Map.insertWith mappend "hsx2hs" [[Rel (BinPkgName "hsx2hs") Nothing Nothing]]
+       (debInfo . control . homepage) .= Just "http://www.clckwrks.com/"
+       (debInfo . rulesFragments) %= Set.insert (pack (Prelude.unlines ["build/clckwrks-dot-com-production::", "\techo CLCKWRKS=`ghc-pkg field clckwrks version | sed 's/version: //'` > debian/default"]))
        (debInfo . atomSet) %= (Set.insert $ InstallTo (BinPkgName "clckwrks-dot-com-production") "debian/default" "/etc/default/clckwrks-dot-com-production")
-       (debInfo . control . standardsVersion) ~= Just (StandardsVersion 3 9 4 Nothing)
-       (debInfo . sourceFormat) ~= Just Native3
-       (debInfo . missingDependencies) += (BinPkgName "libghc-clckwrks-theme-clckwrks-doc")
-       (debInfo . revision) ~= Just ""
+       (debInfo . control . standardsVersion) .= Just (StandardsVersion 3 9 4 Nothing)
+       (debInfo . sourceFormat) .= Just Native3
+       (debInfo . missingDependencies) %= Set.insert (BinPkgName "libghc-clckwrks-theme-clckwrks-doc")
+       (debInfo . revision) .= Just ""
        doWebsite (BinPkgName "clckwrks-dot-com-production") (theSite (BinPkgName "clckwrks-dot-com-production"))
        doBackups (BinPkgName "clckwrks-dot-com-backups") "clckwrks-dot-com-backups"
        liftCabal fixRules
        liftCabal tight
-       (debInfo . compat) ~= Just 7
+       (debInfo . compat) .= Just 7
 
 serverNames = List.map BinPkgName ["clckwrks-dot-com-production" {- , "clckwrks-dot-com-staging", "clckwrks-dot-com-development" -}]
 

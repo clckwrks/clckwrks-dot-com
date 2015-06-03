@@ -40,7 +40,7 @@ Executable clckwrks-dot-com-backups
  if flag(backups)
    Buildable: True
    GHC-Options: -threaded -Wall -Wwarn -O2 -fno-warn-name-shadowing -fno-warn-missing-signatures -fwarn-tabs -fno-warn-unused-binds -fno-warn-orphans -fwarn-unused-imports -fno-spec-constr
-   Build-depends: archive >= 1.6, base, Extra, network-uri, cabal-debian >= 4.24
+   Build-depends: archive >= 1.6, base, sr-extra, network-uri, cabal-debian >= 4.24
  else
    Buildable: False
 

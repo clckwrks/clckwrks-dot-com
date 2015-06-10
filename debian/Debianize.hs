@@ -7,10 +7,8 @@ import Data.Monoid (mappend)
 import Data.Set as Set (singleton, insert)
 import Data.Text as T (lines, pack, Text, unlines)
 import Debian.Changes (ChangeLog)
-import Debian.Debianize -- (evalCabalT, newAtoms, debianize, writeDebianization, compat, control, CabalT, doBackups, doWebsite, execMap, inputChangeLog, installTo, missingDependencies, revision, rulesFragments, rulesHead, rulesSettings, sourceFormat, tightDependencyFixup, homepage, standardsVersion, (+++=), (~=), (+=), (%=), InstallFile(InstallFile, destDir, destName, execName, sourceDir), Server(..), Site(..), debInfo, atomSet)
---import Debian.Debianize.InputCabalPackageDescription (newFlags)
---import Debian.Debianize.Monad (liftCabal)
---import Debian.Debianize.Types.Atoms (Atom(InstallTo))
+import Debian.Debianize
+import Debian.Debianize.Optparse (parseProgramArguments, CommandLineOptions(..))
 import Debian.AutoBuilder.Details.Versions (seereasonDefaults)
 import Debian.Policy (databaseDirectory, SourceFormat(Native3), StandardsVersion(StandardsVersion))
 import Debian.Pretty (ppShow)
@@ -18,7 +16,7 @@ import Debian.Relation (BinPkgName(BinPkgName), Relation(Rel))
 import Distribution.Compiler (CompilerFlavor(GHC))
 
 main :: IO ()
-main = newFlags >>= newCabalInfo >>= evalCabalT (debianize (seereasonDefaults >> customize) >> liftCabal writeDebianization)
+main = parseProgramArguments >>= newCabalInfo . _flags >>= evalCabalT (debianize (seereasonDefaults >> customize) >> liftCabal writeDebianization)
 
 customize :: CabalT IO ()
 customize =
@@ -28,7 +26,7 @@ customize =
        (debInfo . rulesFragments) %= Set.insert (pack (Prelude.unlines ["build/clckwrks-dot-com-production::", "\techo CLCKWRKS=`ghc-pkg field clckwrks version | sed 's/version: //'` > debian/default"]))
        (debInfo . atomSet) %= (Set.insert $ InstallTo (BinPkgName "clckwrks-dot-com-production") "debian/default" "/etc/default/clckwrks-dot-com-production")
        (debInfo . control . standardsVersion) .= Just (StandardsVersion 3 9 4 Nothing)
-       (debInfo . sourceFormat) .= Just Native3
+       (debInfo . sourceFormat) .= Native3
        (debInfo . missingDependencies) %= Set.insert (BinPkgName "libghc-clckwrks-theme-clckwrks-doc")
        (debInfo . revision) .= Just ""
        doWebsite (BinPkgName "clckwrks-dot-com-production") (theSite (BinPkgName "clckwrks-dot-com-production"))

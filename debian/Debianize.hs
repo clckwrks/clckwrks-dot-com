@@ -8,7 +8,6 @@ import Data.Set as Set (singleton, insert)
 import Data.Text as T (lines, pack, Text, unlines)
 import Debian.Changes (ChangeLog)
 import Debian.Debianize
-import Debian.Debianize.Optparse (parseProgramArguments, CommandLineOptions(..))
 import Debian.AutoBuilder.Details.Versions (seereasonDefaults)
 import Debian.Policy (databaseDirectory, SourceFormat(Native3), StandardsVersion(StandardsVersion))
 import Debian.Pretty (ppShow)
@@ -16,7 +15,7 @@ import Debian.Relation (BinPkgName(BinPkgName), Relation(Rel))
 import Distribution.Compiler (CompilerFlavor(GHC))
 
 main :: IO ()
-main = parseProgramArguments >>= newCabalInfo . _flags >>= evalCabalT (debianize (seereasonDefaults >> customize) >> liftCabal writeDebianization)
+main = performDebianization (seereasonDefaults >> customize)
 
 customize :: CabalT IO ()
 customize =

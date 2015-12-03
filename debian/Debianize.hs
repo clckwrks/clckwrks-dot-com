@@ -45,7 +45,7 @@ tight = mapM_ (tightDependencyFixup
                          -- installed during the build.
                          [(BinPkgName "libghc-clckwrks-theme-clckwrks-dev", BinPkgName "haskell-clckwrks-theme-clckwrks-utils"),
                           (BinPkgName "libghc-clckwrks-plugin-media-dev", BinPkgName "haskell-clckwrks-plugin-media-utils"),
-                          (BinPkgName "libghc-clckwrks-plugin-page-dev", BinPkgName "haskell-clckwrks-plugin-page-utils"),
+                          -- (BinPkgName "libghc-clckwrks-plugin-page-dev", BinPkgName "haskell-clckwrks-plugin-page-utils"),
                           (BinPkgName "libghc-clckwrks-dev", BinPkgName "haskell-clckwrks-utils")]) serverNames
 
 theSite :: BinPkgName -> Site

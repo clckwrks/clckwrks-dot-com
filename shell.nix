@@ -7,7 +7,7 @@ let
   f = { mkDerivation, base, clckwrks, clckwrks-plugin-media
       , clckwrks-plugin-page, clckwrks-theme-clckwrks, containers
       , happstack-server, hsp, hsx2hs, mtl, network, stdenv, text
-      , web-plugins
+      , web-plugins, cabal-install
       }:
       mkDerivation {
         pname = "clckwrks-dot-com";
@@ -18,7 +18,7 @@ let
         executableHaskellDepends = [
           base clckwrks clckwrks-plugin-media clckwrks-plugin-page
           clckwrks-theme-clckwrks containers happstack-server hsp mtl network
-          text web-plugins
+          text web-plugins cabal-install
         ];
         executableToolDepends = [ hsx2hs ];
         homepage = "http://www.clckwrks.com/";
